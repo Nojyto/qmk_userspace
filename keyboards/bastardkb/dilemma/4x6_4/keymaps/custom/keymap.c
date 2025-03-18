@@ -129,17 +129,7 @@ extern layer_state_t default_layer_state;
 painter_device_t display;
 static painter_image_handle_t my_image;
 static painter_font_handle_t my_font;
-
 // static deferred_token my_anim;
-
-void keyboard_post_init_kb(void) {
-    if (!display) {
-        display = qp_gc9a01_make_spi_device(240, 240, LCD_CS_PIN, LCD_DC_PIN, LCD_RST_PIN, 2, 0);
-        qp_init(display, QP_ROTATION_0);
-    }
-    if (!my_image) my_image = qp_load_image_mem(gfx_logo);
-    if (!my_font)  my_font  = qp_load_font_mem(&font_fira24);
-}
 
 layer_state_t layer_state_set_user(layer_state_t state) {
     // https://imageresizer.com/
@@ -147,15 +137,21 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     // qmk painter-convert-graphics -f pal2 -i pics/logo.png -o ./generated/
     // qmk painter-make-font-image --font fonts/Fira-Code-Mono.ttf --size 11 -o ./generated/fira11.png
     // qmk painter-convert-font-image --input ./generated/fira11.png -f mono4
-
     const char *text;
     switch (get_highest_layer(state | default_layer_state)) {
-        case LAYER_BASE:   text = "Colemak"; break;
-        case LAYER_QWERTY: text = "QWERTY";  break;
-        case LAYER_LOWER:  text = "Sym";     break;
-        case LAYER_RAISE:  text = "Nav";     break;
-        default:           text = "null";    break;
+        case LAYER_BASE:   text = "Base";     break;
+        case LAYER_QWERTY: text = "Game";     break;
+        case LAYER_LOWER:  text = "Symbols";  break;
+        case LAYER_RAISE:  text = "Navigate"; break;
+        default:           text = "N/A";      break;
     }
+
+    if (!display) {
+        display = qp_gc9a01_make_spi_device(240, 240, LCD_CS_PIN, LCD_DC_PIN, LCD_RST_PIN, 2, 0);
+        qp_init(display, QP_ROTATION_0);
+    }
+    if (!my_image) my_image = qp_load_image_mem(gfx_logo);
+    if (!my_font)  my_font  = qp_load_font_mem(&font_fira24);
 
     // qp_clear(display);
     qp_drawimage(display, (0), (0), my_image);
