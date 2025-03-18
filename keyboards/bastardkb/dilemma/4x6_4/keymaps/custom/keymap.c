@@ -154,11 +154,11 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 
     const char *text;
     switch (get_highest_layer(merged_state)) {
-        case LAYER_BASE:   text = "Colemak";     break;
-        case LAYER_QWERTY: text = "QWERTY";      break;
-        case LAYER_LOWER:  text = "Symbols";     break;
-        case LAYER_RAISE:  text = "Nav & Fkeys"; break;
-        default:           text = "Undefined";   break;
+        case LAYER_BASE:   text = "Colemak"; break;
+        case LAYER_QWERTY: text = "QWERTY";  break;
+        case LAYER_LOWER:  text = "Sym";     break;
+        case LAYER_RAISE:  text = "Nav";     break;
+        default:           text = "null";    break;
     }
 
     if (!my_font)  my_font  = qp_load_font_mem(&font_fira24);
@@ -168,12 +168,12 @@ layer_state_t layer_state_set_user(layer_state_t state) {
         qp_init(display, QP_ROTATION_0);
     }
 
-    qp_clear(display);
+    // qp_clear(display);
     qp_drawimage(display, (0), (0), my_image);
 
     int16_t width = qp_textwidth(my_font, text);
     int16_t x = (240 - width) / 2;
-    int16_t y = (240 - my_font->line_height) / 2 + 80;
+    int16_t y = (240 - my_font->line_height) / 2 + 82;
     qp_drawtext(display, x, y, my_font, text);
     qp_flush(display);
 
