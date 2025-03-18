@@ -18,7 +18,7 @@
 #include QMK_KEYBOARD_H
 #include <qp.h>
 #include "generated/logo.qgf.h"
-#include "generated/fira11.qff.h"
+#include "generated/fira24.qff.h"
 
 enum dilemma_keymap_layers {
     LAYER_BASE = 0,
@@ -125,6 +125,7 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 // clang-format on
 #endif  // ENCODER_MAP_ENABLE
 
+extern layer_state_t default_layer_state;
 painter_device_t display;
 static painter_image_handle_t my_image;
 static painter_font_handle_t my_font;
@@ -149,8 +150,10 @@ static painter_font_handle_t my_font;
 layer_state_t layer_state_set_user(layer_state_t state) {
     // qmk painter-make-font-image --font fonts/Fira-Code-Mono.ttf --size 11 -o ./generated/fira11.png
     // qmk painter-convert-font-image --input ./generated/fira11.png -f mono4
+    layer_state_t merged_state = state | default_layer_state;
+
     const char *text;
-    switch (get_highest_layer(state)) {
+    switch (get_highest_layer(merged_state)) {
         case LAYER_BASE:   text = "Colemak";     break;
         case LAYER_QWERTY: text = "QWERTY";      break;
         case LAYER_LOWER:  text = "Symbols";     break;
@@ -158,7 +161,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
         default:           text = "Undefined";   break;
     }
 
-    if (!my_font)  my_font  = qp_load_font_mem(&font_fira11);
+    if (!my_font)  my_font  = qp_load_font_mem(&font_fira24);
     if (!my_image) my_image = qp_load_image_mem(gfx_logo);
     if (!display) {
         display = qp_gc9a01_make_spi_device(240, 240, LCD_CS_PIN, LCD_DC_PIN, LCD_RST_PIN, 2, 0);
@@ -170,7 +173,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 
     int16_t width = qp_textwidth(my_font, text);
     int16_t x = (240 - width) / 2;
-    int16_t y = (240 - my_font->line_height) / 2 - 30;
+    int16_t y = (240 - my_font->line_height) / 2 + 80;
     qp_drawtext(display, x, y, my_font, text);
     qp_flush(display);
 
@@ -178,5 +181,6 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 }
 
 layer_state_t default_layer_state_set_user(layer_state_t state) {
+    default_layer_state = state;
     return layer_state_set_user(state);
 }
