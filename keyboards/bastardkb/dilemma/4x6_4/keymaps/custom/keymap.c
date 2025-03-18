@@ -125,6 +125,9 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 // clang-format on
 #endif  // ENCODER_MAP_ENABLE
 
+#define DP_W 240
+#define DP_H 240
+
 extern layer_state_t default_layer_state;
 painter_device_t display;
 static painter_image_handle_t my_image;
@@ -146,18 +149,20 @@ layer_state_t layer_state_set_user(layer_state_t state) {
         default:           text = "N/A";      break;
     }
 
-    if (!display) {
-        display = qp_gc9a01_make_spi_device(240, 240, LCD_CS_PIN, LCD_DC_PIN, LCD_RST_PIN, 2, 0);
-        qp_init(display, QP_ROTATION_0);
-    }
     if (!my_image) my_image = qp_load_image_mem(gfx_logo);
     if (!my_font)  my_font  = qp_load_font_mem(&font_fira24);
+    if (!display) {
+        display = qp_gc9a01_make_spi_device(DP_W, DP_H, LCD_CS_PIN, LCD_DC_PIN, LCD_RST_PIN, 2, 0);
+        qp_init(display, QP_ROTATION_0);
+        qp_drawimage(display, (0), (0), my_image);
+    }
 
     // qp_clear(display);
-    qp_drawimage(display, (0), (0), my_image);
-
     int16_t width = qp_textwidth(my_font, text);
-    qp_drawtext(display, (240 - width) / 2, (240 - my_font->line_height) / 2 + 82, my_font, text);
+    int16_t x = (DP_W - width) / 2;
+    int16_t y = (DP_H - my_font->line_height) / 2 + 82;
+    qp_rect(display, 0, y, DP_W, y + my_font->line_height, 0, 0, 0, true);
+    qp_drawtext(display, x, y, my_font, text);
     qp_flush(display);
 
     return state;
