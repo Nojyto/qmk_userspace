@@ -27,6 +27,10 @@ enum dilemma_keymap_layers {
     LAYER_RAISE,
 };
 
+enum custom_keycodes {
+    M_EMAIL = SAFE_RANGE,
+};
+
 #define LOWER MO(LAYER_LOWER)
 #define RAISE MO(LAYER_RAISE)
 #define MT_CTES MT(MOD_LCTL, KC_ESC)
@@ -88,7 +92,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // ╭───────────────────────────────────────────────────────────────────────╮ ╭──────────────────────────────────────────────────────────────────────╮
         KC_F12,   KC_F1,       KC_F2,         KC_F3,       KC_F4,      KC_F5,         KC_F6,       KC_F7,     KC_F8,      KC_F9,    KC_F10,    KC_F11,
   // ├───────────────────────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────────────────────┤
-       _______, XXXXXXX,     XXXXXXX,       XXXXXXX, RCS(KC_ESC),  LSG(KC_S),       KC_HOME,     KC_PGUP,   KC_PGDN,     KC_END, RCS(KC_E),   C(KC_1),
+       _______, M_EMAIL,     XXXXXXX,       XXXXXXX, RCS(KC_ESC),  LSG(KC_S),       KC_HOME,     KC_PGUP,   KC_PGDN,     KC_END, RCS(KC_E),   C(KC_1),
   // ├───────────────────────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────────────────────┤
        _______, KC_LEFT, KC_MS_WH_UP, KC_MS_WH_DOWN,  KC_MS_BTN1, KC_MS_BTN2,       KC_LEFT,     KC_DOWN,     KC_UP,    KC_RGHT, RCS(KC_F), C(KC_GRV),
   // ├───────────────────────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────────────────────┤
@@ -124,6 +128,17 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 };
 // clang-format on
 #endif  // ENCODER_MAP_ENABLE
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case M_EMAIL:
+            if (record->event.pressed) {
+                SEND_STRING("nojusskirkevicius@gmail.com");
+            }
+            return false;
+        default: return true;
+    }
+}
 
 #define DP_W 240
 #define DP_H 240
